@@ -106,6 +106,11 @@ namespace upywrap
       return type;
     }
 
+    static mp_obj_t Cast( mp_obj_t other )
+    {
+      return AsPyObj( AsNativeNonNullPtr( other ), true );
+    }
+
     template< class A >
     void StoreClassVariable( const char* name, const A& value )
     {
@@ -515,6 +520,10 @@ namespace upywrap
       mp_obj_dict_store( dict, new_qstr( ( name + "_locals" ).data() ), type.locals_dict );
 
       AddFunctionToTable( MP_QSTR___del__, MakeFunction( del ) );
+      auto caster = m_new_obj( mp_rom_obj_static_class_method_t );
+      caster->base.type = &mp_type_staticmethod;
+      caster->fun = MakeFunction( Cast );
+      StoreClassVariable( "Cast", MP_OBJ_FROM_PTR( caster ) );
     }
 
     static void CheckTypeIsRegistered()
