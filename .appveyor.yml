@@ -2,6 +2,7 @@ image: Visual Studio 2017
 
 environment:
   MICROPY_CPYTHON3: c:/python34/python.exe
+  MICROPY_MICROPYTHON: c:/projects/micropython/ports/windows/micropython.exe
   MICROPYPATH: c:/projects/micropython/ports/windows
 
 init:
@@ -28,9 +29,11 @@ build_script:
 
 test_script:
 - cmd: >-
-    cd ../micropython/tests
+    %MICROPY_CPYTHON3% ../micropython/tests/run-tests --keep-path -d tests/py
 
-    %MICROPY_CPYTHON3% run-tests --keep-path -d ../../micropython-wrap/tests/py
+on_failure:
+- cmd: >-
+    %MICROPY_CPYTHON3% ../micropython/tests/run-tests --print-failures
 
 skip_tags: true
 
